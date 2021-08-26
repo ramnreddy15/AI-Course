@@ -37,7 +37,7 @@ def make_tags(tag, word):
   return "<"+tag+">"+word+"</"+tag+">"
 
 def make_out_word(out, word):
-  return out[0:int(len(out)/2)]+word+out[int(len(out)/2):] # Grader doesnt allow "):" in the string substring
+  return out[0:int(len(out)/2)]+word+out[int(len(out)/2) :] # Grader doesnt allow "):" in the string substring
 
 def extra_end(str):
   return str[-2:]*3
