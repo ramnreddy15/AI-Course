@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Unit0",
+    "\\Unit0\\Lab1",
+    "\\Unit0\\Python_Exercises"
   ],
-  "SelectedNode": "\\G:\\My Drive\\AI_Course",
+  "SelectedNode": "\\Unit0\\Python_Exercises\\version_check.py",
   "PreviewInSolutionExplorer": false
 }
