@@ -31,7 +31,7 @@ def array_front9(nums):
 
 
 def array123(nums):
-    return True if(sum([1 if nums[i:i+3] == [1, 2, 3] else 0 for i in range(len(nums))]) > 0) else False
+    return True if(sum([1 if nums[i:i+3] == [1, 2, 3] else False for i in range(len(nums))]) > 0) else False
 
 
 def string_match(a, b):
@@ -57,7 +57,7 @@ def no_teen_sum(a, b, c):
 
 
 def round_sum(a, b, c):
-    return sum([int(round(i, -1)) for i in [a, b, c]])
+    return sum([int(round(i+1 if i%5==0 else i, -1)) for i in [a, b, c]])
 
 
 def close_far(a, b, c):
@@ -87,8 +87,7 @@ def count_code(str):
 
 
 def end_other(a, b):
-    return True
-#   return True if ((len(a) >= len(b)) and a[len(a)-len(b) :len(a)].lower()==b.lower()) else True if ((len(a) < len(b)) and b[len(b)-len(a) :len(b)].lower()==a.lower()) else  False
+  return True if ((len(a) >= len(b)) and a[len(a)-len(b)+0:len(a)].lower()==b.lower()) else True if ((len(a) < len(b)) and b[len(b)-len(a)+0:len(b)].lower()==a.lower()) else False
 
 
 def xyz_there(str):
@@ -106,6 +105,7 @@ def big_diff(nums):
 
 
 def centered_average(nums):
+    print(nums[1:len(nums)-1])
     return int(sum(sorted(nums)[1:len(nums)-1])/(len(nums)-2))
 
 
@@ -119,3 +119,5 @@ def sum67(nums):
 
 def has22(nums):
     return (2, 2) in zip(nums, nums[1:])
+    
+print(centered_average([-5, 15, 9, -1, -3, -5, -1]))
