@@ -49,11 +49,10 @@ def lone_sum(a, b, c):
 
 
 def lucky_sum(a, b, c):
-    return sum([a,b,c][:[a,b,c].index(13) if 13 in [a,b,c] else 3])
-
+    return sum([a,b,c][:[[[3,2][c==13],1][b==13],0][a==13]])
 
 def no_teen_sum(a, b, c):
-    return a+b+c-sum([[0,[a,b,c].count(i)*i][i in [a,b,c]] for i in [13,14,17,18,19]])
+    return a+b+c-sum([[a,b,c].count(i)*i for i in [13,14,17,18,19]])
 
 
 def round_sum(a, b, c):
@@ -109,7 +108,7 @@ def centered_average(n):
     #return sum(sorted(nums)[1:len(nums)-1])//(len(nums)-2)
 
 def sum13(n):
-    return sum([[0,j][(i==0 and j!=13) or (i>0 and (j!=13 and n[i-1]!=13))] for i, j in enumerate(n)])
+    return sum([[0,j][(i==0 and j!=13) or (i>0 and j!=13 and n[i-1]!=13)] for i, j in enumerate(n)])
 
 
 def sum67(u):
