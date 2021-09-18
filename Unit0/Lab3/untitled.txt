@@ -1,0 +1,40 @@
+list of numbers: 1 2 3 4 5 6 7 8 9 10
+1. sum = 55
+2. list of multiples of 3: [3, 6, 9]
+Type n for Fibonacci sequence: 6
+3. fibonacci: 1 1 2 3 5 8
+Type a string: Aardvark
+4. every other str: Arvr
+Type a number to check prime: 23
+5. Is prime? True
+Type three sides of a triangle: 13 14 15
+6. The area of 13 14 15 is 84.0
+Type a sentence: Ma'ma Mia! I'm a Ma'm.
+7. Punct removed: MamaMiaImaMam
+8. Is palindrome? True
+9. Count each vowel: {'a': 5, 'e': 0, 'i': 1, 'o': 0, 'u': 0}
+Type two integers (lower bound and upper bound): 2 5
+10. Evaluate f(k)=k^2 - 3k + 2 from 2 to 5: 0 2 6 12
+Type a string: baby b ba a ba boola aba baby boy baby aaa
+11. Most occurred char: b a
+12. List of words starting and ending with vowels: ['a', 'aba', 'aaa']
+13. Capitalize starting letter of every word: Baby B Ba A Ba Boola Aba Baby Boy Baby Aaa
+14. Reverse every word: ybab b ab a ab aloob aba ybab yob ybab aaa
+15. Find the first and replace with the second: ba a ba boola aba b boy b aaa
+Type a string to remove all duplicate chars: detection
+16. Remove all duplicat chars: detcion
+Type a string to check if it has only digits or not: 1101
+17. Is a number?: True
+18. It is a binary number: 13
+Type the first string to check anagram: elvis
+Type the second string to check anagram: lives
+19. Are elvis and lives anagram?: True
+Type the image file name: tj_logo.jpg
+20. Image dimension: 165 by 124
+Type a string to find the longest palindrome: b ba a ba booloob aba baby boy baby
+21. Longest palindrome within the string: ababooloobaba
+Type a string to do permutation: aab
+22. all permutations: ['aab', 'aba', 'aab', 'aba', 'baa', 'baa']
+23. all unique permutations: {'baa', 'aab', 'aba'}
+Type a string to find the longest non-decreasing sub: aabcccb aaaaaabbbbcccca
+24. longest non-decreasing sub: aaaaaabbbbcccc

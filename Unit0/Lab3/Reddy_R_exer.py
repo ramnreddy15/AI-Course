@@ -3,7 +3,9 @@
 # Do not forget to change the file name -> Save as
 import math
 import string
+import os
 from PIL import Image
+import itertools
 
 # ''' Tasks '''
 # 1. Given an input of a space-separated list of any length of integers, output the sum of them.
@@ -17,17 +19,19 @@ print("2. list of multiples of 3:", [int(x)
 # 3. Given an integer input, print the first n Fibonacci numbers. eg. n=6: 1, 1, 2, 3, 5, 8
 amount = int(input("Type n for Fibonacci sequence: "))
 print("3. fibonacci: ", end="")
+tempStr = ""
 x, y, temp = 0, 1, 0
 for i in range(amount):
     if i != 0:
         temp = x
         x = y
         y = x+temp
-    print(y, end=" ")
-print("", end="\n")
+    tempStr += str(y) + " "
+    
+print(tempStr[:-1], end="\n")
 
 # 4. Given an input, output a string composed of every other character. eg. Aardvark -> Arvr
-print("4. every other string:", str(input("Type a string: "))[::2])
+print("4. every other str:", str(input("Type a string: "))[::2])
 
 
 # 5. Given a positive integer input, check whether the number is prime or not.
@@ -48,28 +52,29 @@ print("6. The area of", arr[0], arr[1], arr[2], "is", area)
 # eg. "Don't quote me," she said. -> Dontquotemeshesaid
 msg = input("Type a sentence: ")
 msg = "".join(i for i in msg if i not in string.punctuation).replace(" ", "")
-print("7. Funct removed:", msg)
+print("7. Punct removed:", msg)
 
 # 8. Check whether the input string (from #7, lower cased, with punctuation removed) is a palindrome.
-msg = msg.lower()
-print("8. Is Palindrome?", msg == msg[::-1])
+msgTemp = msg.lower()
+print("8. Is palindrome?", msgTemp == msgTemp[::-1])
 
 # 9. Count the number of each vowel in the input string (from #7).
-print("9. Count each voewl:", {i: msg.count(i) for i in "aeiou"})
+print("9. Count each vowel:", {i: msg.count(i) for i in "aeiou"})
 
 # 10. Given two integers as input, print the value of f\left(k\right)=k^2-3k+2 for each integer between the two inputs.
 # eg. 2 5 -> 0, 2, 6, 12
 i, j = input("Type two integers (lower bound and upper bound): ").split()
 print("10. Evaluate f(k)=k^2 - 3k + 2 from {} to {}:".format(i, j), end=" ")
+temp = ""
 for k in range(int(i), int(j)+1):
-    print(k**2-3*k+2, end=" ")
-print()
+    temp += str(k**2-3*k+2) + " "
+print(temp[:-1])
 
 # 11. Given an input of a string, determines a character with the most number of occurrences.
 msg = input("Type a string: ")
 temp = {i: msg.count(i) for i in set(msg)}
 temp2 = sorted(temp.values())
-print("11. Most occured char:", " ".join(
+print("11. Most occurred char:", " ".join(
     sorted([i for i in temp.keys() if temp[i] == temp2[-1]], reverse=True)))
 
 # 12. With the input string from #11, output a list of all the words that start and end in a vowel.
@@ -83,9 +88,10 @@ print("13. Capitalize starting letter of every word:", msg.title())
 
 # 14. With the input string from #11, prints out the string with each word in the string reversed.
 print("14. Reverse every word:", end=" ")
+tempStr = ""
 for w in words:
-    print(w[::-1], end=" ")
-print()
+    tempStr+=str(w[::-1]) + " "
+print(tempStr[:-1])
 
 # 15. With the input string from #11, treats the first word of the input as a search string to be found in the rest
 # of the string, treats the second word as a replacement for the first, and treats the rest of the input as the string to be searched.
@@ -128,14 +134,15 @@ else:
     print("False")
 
 # 20. Given an input filename, if the file exists and is an image, find the dimensions of the image.
-filename = input("Type the image file address: ")
-try:
+filename = input("Type the image file name: ")
+# try:
+if os.path.isfile(os.getcwd()+"/"+filename):
     im = Image.open(filename)
     im.verify()
     print("20. Image dimension: {} by {}".format(im.width, im.height))
     im.close()
-except:
-    print("20. Invalid image please try again.")
+# except:
+#     print("20. Invalid image please try again.")
 
 
 # 21. Given an input of a string, find the longest palindrome within the string.
@@ -170,17 +177,17 @@ def permute(string, permutations, level):
 
     return permutations
 
-
-permutations = permute(str(input("Type a string to do permutation: ")), [], 0)
+msg = str(input("Type a string to do permutation: "))
+permutations = permute(msg, [], 0)
 print("22. all permutations:", permutations)
 
 # 23. Given the input string from #22, find all the unique permutations of a string.
-print("23. all unique permutations:", list(set(permutations)))
+tempStr = {"".join(i) for i in list(itertools.permutations(msg))[::-1]}
+print("23. all unique permutations:", tempStr)
 
 
 # 24. Given an input of a string, find a longest non-decreasing subsequence within the string (according to ascii value).
 msg = str(input("Type a string to find the longest non-decreasing sub: "))
-print(msg)
 arr = [ord(i) for i in msg]
 temp, max = 0, []
 for i in range(len(arr)):
@@ -192,3 +199,4 @@ for i in range(len(arr)):
         max = arr[i-temp:i]
         temp = 0
 print("24. longest non-decreasing sub:", "".join(chr(i) for i in max))
+

@@ -1,3 +1,6 @@
+# Name: Ram Reddy
+# Date: 09/17/2021
+
 import random
 
 GOAL_STRING = "_12345678"
@@ -8,7 +11,7 @@ def getInitialState():
     l = list(x)
     random.shuffle(l)
     y = ''.join(l)
-    return "_42135678"
+    return y
 
 
 '''precondition: i<j
