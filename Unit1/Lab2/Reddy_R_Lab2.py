@@ -2,10 +2,8 @@
 # Date: 09/22/2021
 
 words = set()
-# for word in open("words.txt","r"):
-for word in open("C:\\Users\\kesha\\Desktop\\AI-Course\\Unit1\\Lab2\\words.txt","r"):
+for word in open("words.txt","r"):
     words.add(word[:-1])
-
     
 def swap(word, switch, i):
     word = list(word)
@@ -31,7 +29,6 @@ def display_path(n, explored):  # key: current, value: parent
     return l[::-1]
 
 def BFS(start, end, word_dict):
-
    explored = {start:"s"}
    Q = []
    Q.append(start)
@@ -40,7 +37,8 @@ def BFS(start, end, word_dict):
          return ("No Solution")
       s = Q.pop(0)      
       if s == end:
-         return display_path(s, explored)
+         arr = display_path(s, explored)
+         return arr, len(arr)
       for a in generate_adjacents(s, word_dict):
          if a not in explored.keys():
             Q.append(a)
@@ -48,24 +46,33 @@ def BFS(start, end, word_dict):
             
 def recur(start, end, word_dict, explored, limit):
     if start==end:
-        return display_path(start, explored)
-    elif limit == 0: return None
+        arr = display_path(start, explored)
+        return arr, len(arr) 
+    elif limit == 0: return "No Solution", "NS"
     else:
         isCutoff = False
         for a in generate_adjacents(start, word_dict):
             if a not in explored.keys():
                 explored[a] = start
                 result = recur(a, end, word_dict, { key : explored[key] for key in explored }, limit-1)
-                if result == None: 
+                if result[0] == "No Solution": 
                     isCutoff = True
                 else:
                     return result
         if isCutoff:
-            return None        
+            return "No Solution", "NS"   
+        return "No Solution", "NS"
 
 def DLS(start, end, word_dict, limit):
     explored = {start:"s"}
     return recur(start, end, word_dict, explored, limit-1)
+
+def IDS(start, end, word_dict, limit):
+    for i in range(1,limit+1):
+        path, steps = DLS(start, end, word_dict, i)
+        if path != "No Solution":
+            return path, steps
+    return "No Solution", "NS"
 
 def exitGracefully(start, end, limit=5):
     if start not in words or len(start) != 6:
@@ -83,23 +90,26 @@ def main():
     end = input("Type the goal word: ")
     if exitGracefully(start, end):
         return
-    arr = BFS(start,end,words)
-    print(arr)
-    print("The number of steps:", len(arr))
-    limit = int(input("Type the limit (1 - 20): "))
+    path, steps = BFS(start,end,words)
+    print(path)
+    print("The number of steps:", steps)
+    try:
+        limit = int(input("Type the limit (1 - 20): "))
+    except:
+        return    
     start = input("Type the starting word: ")
     end = input("Type the goal word: ")
     if exitGracefully(start, end, limit):
         return
-    arr = DLS(start, end, words, limit)
-    if arr != None:
-        print("Path:", arr)
-        print("steps within",limit ,"limit:", len(arr))
+    path, steps = DLS(start, end, words, limit)
+    if path != "No Solution":
+        print("Path:", path)
+        print("steps within",limit ,"limit:", steps)
     else:
-        print("No Soultion")
-    arr = BFS(start, end, words)
-    print("Shortest Path:",arr)
-    print("Steps:",len(arr))
+        print(path)
+    path, steps = IDS(start, end, words, limit)
+    print("Shortest Path:", path)
+    print("Steps:", steps)
     
 if __name__ == '__main__':
     main()
