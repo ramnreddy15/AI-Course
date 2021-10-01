@@ -1,169 +1,239 @@
-# Name: Ram Reddy 
+# Name: Ram Reddy
 # Date: 09/29/2021
 
-import random, time, math
+import random
+import time
+import math
 
 class HeapPriorityQueue():
-   
-   def __init__(self):
-      self.queue = ["dummy"]  # we do not use index 0 for easy index calulation
-      self.current = 1        # to make this object iterable
 
-   def next(self):            # define what __next__ does
-      if self.current >=len(self.queue):
-         self.current = 1     # to restart iteration later
-         raise StopIteration
-    
-      out = self.queue[self.current]
-      self.current += 1
-   
-      return out
+    def __init__(self):
+        # we do not use index 0 for easy index calulation
+        self.queue = ["dummy"]
+        self.current = 1        # to make this object iterable
 
-   def __iter__(self):
-      return self
+    def next(self):            # define what __next__ does
+        if self.current >= len(self.queue):
+            self.current = 1     # to restart iteration later
+            raise StopIteration
 
-   __next__ = next
+        out = self.queue[self.current]
+        self.current += 1
 
-   def isEmpty(self):
-      return len(self.queue) == 1    # b/c index 0 is dummy
+        return out
 
-   def swap(self, a, b):
-      self.queue[a], self.queue[b] = self.queue[b], self.queue[a]
+    def __iter__(self):
+        return self
 
-   # Add a value to the heap_pq
-   def push(self, value):
-      self.queue.append(value)
-      # write more code here to keep the min-heap property
+    __next__ = next
 
-   # helper method for push      
-   def heapUp(self, k):
-      pass 
-               
-   # helper method for reheap and pop
-   def heapDown(self, k, size):
-      pass
-   
-   # make the queue as a min-heap            
-   def reheap(self):
-      pass
-   
-   # remove the min value (root of the heap)
-   # return the removed value            
-   def pop(self):
-      # Your code goes here
-      return self.queue.pop()    # change this
-      
-   # remove a value at the given index (assume index 0 is the root)
-   # return the removed value   
-   def remove(self, index):
-      # Your code goes here
-      return self.queue[0]       # change this  
+    def isEmpty(self):
+        return len(self.queue) == 1    # b/c index 0 is dummy
 
-# This method is for testing. Do not change it.
-def isHeap(heap, k):
-   left, right = 2*k, 2*k+1
-   if left == len(heap): return True
-   elif len(heap) == right and heap[k] > heap[left]: return False
-   elif right < len(heap): 
-      if (heap[k] > heap[left] or heap[k] > heap[right]): return False
-      else: return isHeap(heap, left) and isHeap(heap, right)
-   return True
-    
-def inversion_count(new_state, width = 4, N = 4):
-   ''' 
-   Depends on the size(width, N) of the puzzle, 
-   we can decide if the puzzle is solvable or not by counting inversions.
-   If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
-   If N is even, puzzle instance is solvable if
-      the blank is on an even row counting from the bottom (second-last, fourth-last, etc.) and number of inversions is even.
-      the blank is on an odd row counting from the bottom (last, third-last, fifth-last, etc.) and number of inversions is odd.
-   ''' 
-   numInversions = 0
-   for i in range(len(new_state)):
-    for k in new_state[i+1:]:
-        if new_state[i] > k:
-            numInversions+=1
-   if N % 2 == 1:
-        return [False,True][numInversions%2==0]
-   else:
-    if (new_state.index("_")//4)%2==0 and numInversions%2==0:
-        return True
-    elif (new_state.index("_")//4)%2==1 and numInversions%2==1:
-        return True
-   return False
+    def swap(self, a, b):
+        self.queue[a], self.queue[b] = self.queue[b], self.queue[a]
+
+    # Add a value to the heap_pq
+    def push(self, value):
+        self.queue.append(value)
+        self.heapUp(len(self.queue)-1)
+        if (len(self.queue) > 2 and self.queue[1] > self.queue[2]):
+            self.swap(1, 2)
+
+    # helper method for push
+    def heapUp(self, k):
+        while((k+1) / 2 > 1):
+            leftN = k//2
+            rightN = (k - 1) // 2
+            if (k % 2 != 0 and self.queue[k] < self.queue[rightN]):
+                self.swap(k, rightN)
+                k = rightN
+            elif (k % 2 == 0 and self.queue[k] < self.queue[leftN]):
+                self.swap(k, leftN)
+                k = leftN
+            else:
+                k = 0
+
+    # helper method for reheap and pop
+    def heapDown(self, k, size):
+        while ((2*k)+1 < size):
+            leftN = 2*k
+            rightN = (2*k)+1
+            if self.queue[leftN] <= self.queue[rightN] and self.queue[leftN] < self.queue[k]:
+                temp = self.queue[k]
+                self.queue[k] = self.queue[leftN]
+                self.queue[leftN] = temp
+                k = leftN
+            elif self.queue[leftN] > self.queue[rightN] and self.queue[rightN] < self.queue[k]:
+                temp = self.queue[k]
+                self.queue[k] = self.queue[rightN]
+                self.queue[rightN] = temp
+                k = rightN
+            else:
+                k = size
+
+    # make the queue as a min-heap
+    def reheap(self):
+        for i in range(1, len(self.queue)):
+            self.heapDown(i, len(self.queue))
+
+    # remove the min value (root of the heap)
+    # return the removed value
+    def pop(self):
+        temp = self.queue[1]
+        self.remove(0)
+        return temp
+
+    # remove a value at the given index (assume index 0 is the root)
+    # return the removed value
+    def remove(self, index):
+        index = index + 1
+        if (len(self.queue) > 1):
+            temp = self.queue[index]
+            self.queue[index] = self.queue[-1]
+            self.queue.pop()
+            self.heapDown(index, len(self.queue))
+            if (len(self.queue) > 2 and self.queue[1] > self.queue[2]):
+                self.swap(1, 2)
+            return temp
+        else:
+            return None
+
+def inversion_count(new_state, width=4, N=4):
+    '''
+    Depends on the size(width, N) of the puzzle,
+    we can decide if the puzzle is solvable or not by counting inversions.
+    If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
+    If N is even, puzzle instance is solvable if
+       the blank is on an even row counting from the bottom (second-last, fourth-last, etc.) and number of inversions is even.
+       the blank is on an odd row counting from the bottom (last, third-last, fifth-last, etc.) and number of inversions is odd.
+    '''
+    numInversions = 0
+    for i in range(len(new_state)):
+        for k in new_state[i+1:]:
+            if new_state[i] > k:
+                numInversions += 1
+    if N % 2 == 1:
+        return [False, True][numInversions % 2 == 0]
+    else:
+        if (new_state.index("_")//4) % 2 == 0 and numInversions % 2 == 0:
+            return True
+        elif (new_state.index("_")//4) % 2 == 1 and numInversions % 2 == 1:
+            return True
+    return False
+
 
 def check_inversion():
-   t1 = inversion_count("_42135678", 3, 3)  # N=3
-   f1 = inversion_count("21345678_", 3, 3)
-   t2 = inversion_count("4123C98BDA765_EF", 4) # N is default, N=4
-   f2 = inversion_count("4123C98BDA765_FE", 4)
-   return t1 and t2 and not (f1 or f2)
+    t1 = inversion_count("_42135678", 3, 3)  # N=3
+    f1 = inversion_count("21345678_", 3, 3)
+    t2 = inversion_count("4123C98BDA765_EF", 4)  # N is default, N=4
+    f2 = inversion_count("4123C98BDA765_FE", 4)
+    return t1 and t2 and not (f1 or f2)
 
 
 def getInitialState(sample, size):
-   sample_list = list(sample)
-   random.shuffle(sample_list)
-   new_state = ''.join(sample_list)
-   while not inversion_count(new_state, size, size): 
-      random.shuffle(sample_list)
-      new_state = ''.join(sample_list)
-   return new_state
-   
+    sample_list = list(sample)
+    random.shuffle(sample_list)
+    new_state = ''.join(sample_list)
+    while not inversion_count(new_state, size, size):
+        random.shuffle(sample_list)
+        new_state = ''.join(sample_list)
+    return new_state
+
+
 def swap(n, i, j):
     n = list(n)
     temp = n[i]
     n[i] = n[j]
     n[j] = temp
     return "".join(n)
-      
+
+
 '''Generate a list which hold all children of the current state
    and return the list'''
+
+
 def generate_children(state, size=4):
-   children = []
-   blank = state.find('_')
-   '''your code goes here'''
-   return children
+    blank = state.index('_')
+    return [swap(state, blank, i) for i in [blank+1, blank-1, blank+size, blank-size] if i >= 0 and i < len(state)]
+
 
 def display_path(path_list, size):
-   for n in range(size):
-      for path in path_list:
-         print (path[n*size:(n+1)*size], end = " "*size)
-      print ()
-   print ("\nThe shortest path length is :", len(path_list))
-   return ""
+    for n in range(size):
+        for path in path_list:
+            print(path[n*size:(n+1)*size], end=" "*size)
+        print()
+    print("\nThe shortest path length is :", len(path_list))
+    return ""
+
 
 ''' You can make multiple heuristic functions '''
-def dist_heuristic(state, goal = "_123456789ABCDEF", size=4):
-   # Your code goes here
-   return 0
+
+
+def dist_heuristic(state, goal="_123456789ABCDEF", size=4):
+    total = 0
+    for i in range(len(state)):
+        temp = goal.find(state[i])
+        if i != temp:
+            total += abs(temp//size - i//size) + abs(temp % size - i % size)
+    return total
+
+def get_cost(explored, n):
+   cost = 0
+   while explored[n] != "s":  # "s" is initial's parent
+      cost+=1
+      n = explored[n]
+   return cost+1
 
 def check_heuristic():
-   a = dist_heuristic("152349678_ABCDEF", "_123456789ABCDEF", 4)
-   b = dist_heuristic("8936C_24A71FDB5E", "_123456789ABCDEF", 4)
-   return (a < b) 
+    a = dist_heuristic("152349678_ABCDEF", "_123456789ABCDEF", 4)
+    b = dist_heuristic("8936C_24A71FDB5E", "_123456789ABCDEF", 4)
+    return (a < b)
 
-def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size = 4):
-   frontier = HeapPriorityQueue()
-   if start == goal: return []
-   # Your code goes here
-   return None
+
+def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size=4):
+    frontier = HeapPriorityQueue()
+    frontier.push((heuristic(start, goal, size), start))
+    explored = {}
+    costs = {start:1}
+    explored[start] = "s"
+    while True:
+        s = frontier.pop()[1]
+        if s == goal:
+            n = s
+            l = []
+            while explored[n] != "s":  # "s" is initial's parent
+               l.append(n)
+               n = explored[n]
+            l.append(start)
+            return l[::-1]
+        for a in generate_children(s):
+            if a not in explored:
+                frontier.push((heuristic(a, goal, size)+costs[s], a))
+                costs[a] = costs[s] + 1
+                explored[a] = s
+
 
 def main():
-   # A star
-   print ("Inversion works?:", check_inversion())
-   print ("Heuristic works?:", check_heuristic())
-   #initial_state = getInitialState("_123456789ABCDEF", 4)
-   initial_state = input("Type initial state: ")
-   if inversion_count(initial_state):
-      cur_time = time.time()
-      path = (a_star(initial_state))
-      if path != None: display_path(path, 4)
-      else: print ("No Path Found.")
-      print ("Duration: ", (time.time() - cur_time))
-   else: print ("{} did not pass inversion test.".format(initial_state))
-   
+    # A star
+    print("Inversion works?:", check_inversion())
+    print("Heuristic works?:", check_heuristic())
+    # initial_state = getInitialState("_123456789ABCDEF", 4)
+    initial_state = input("Type initial state: ")
+    if inversion_count(initial_state):
+        cur_time = time.time()
+        path = (a_star(initial_state))
+        if path != None:
+            display_path(path, 4)
+        else:
+            print("No Path Found.")
+        print("Duration: ", (time.time() - cur_time))
+    else:
+        print("{} did not pass inversion test.".format(initial_state))
+
+
 if __name__ == '__main__':
-   main()
+    main()
 
 
 ''' Sample output 1

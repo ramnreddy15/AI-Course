@@ -11,7 +11,7 @@ def getInitialState():
     l = list(x)
     random.shuffle(l)
     y = ''.join(l)
-    return y
+    return "_42135678"
 
 
 '''precondition: i<j
@@ -32,29 +32,10 @@ def swap(state, i, j):
 
 
 def generate_children(state):
-    '''your code goes here'''
-    index = state.index("_")
-    temp = []
-    if index == 0:
-        temp = [index+1, index+3]
-    if index == 1:
-        temp = [index-1, index+1, index+3]
-    if index == 2:
-        temp = [index - 1, index+3]
-    if index == 3:
-        temp = [index + 1, index - 3, index + 3]
-    if index == 4:
-        temp = [index+1, index-1, index-3, index+3]
-    if index == 5:
-        temp = [index - 1, index + 3, index-3]
-    if index == 6:
-        temp = [index + 1, index - 3]
-    if index == 7:
-        temp = [index - 1, index+1, index - 3]
-    if index == 8:
-        temp = [index-1, index-3]
-    # convert to modulos
-    return [swap(state, index, i) for i in temp]
+    size =3    
+    blank = state.index('_')
+    return [swap(state, blank, i) for i in [blank+1, blank-1, blank+size, blank-size] if i >= 0  and i < len(state)]
+
 
 
 def display_path(n, explored):  # key: current, value: parent
