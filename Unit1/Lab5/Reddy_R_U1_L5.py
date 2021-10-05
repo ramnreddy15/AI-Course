@@ -1,64 +1,71 @@
-# Name: Ram Reddy          
+# Name: Ram Reddy
 # Date: 10/05/2021
 
 import time
 
 words = set()
-for word in open("words_6_longer.txt","r"):
+for word in open("words_6_longer.txt", "r"):
     words.add(word[:-1])
-    
+
+
 def swap(word, switch, i):
     word = list(word)
     word[i] = switch
     return "".join(word)
 
+
 def generate_adjacents(current, words_set):
-   ''' words_set is a set which has all words.
-   By comparing current and words in the words_set,
-   generate adjacents set of current and return it'''
-   adj_set = set()
+    ''' words_set is a set which has all words.
+    By comparing current and words in the words_set,
+    generate adjacents set of current and return it'''
+    adj_set = set()
     for i in range(len(current)):
         for j in "abcdefghijklmnopqrstuvwxyz":
-            if j!=current[i] and swap(current, j, i) in word_list:
-                adj_list.add(swap(current, j, i))
-   return adj_set
+            if j != current[i] and swap(current, j, i) in words_set:
+                adj_set.add(swap(current, j, i))
+    return adj_set
+
 
 def check_adj(words_set):
-   # This check method is written for words_6_longer.txt
-   adj = generate_adjacents('listen', words_set)
-   target =  {'listee', 'listel', 'litten', 'lister', 'listed'}
-   return (adj == target)
+    # This check method is written for words_6_longer.txt
+    adj = generate_adjacents('listen', words_set)
+    target = {'listee', 'listel', 'litten', 'lister', 'listed'}
+    return (adj == target)
+
 
 def bi_bfs(start, goal, words_set):
-   '''The idea of bi-directional search is to run two simultaneous searches--
-   one forward from the initial state and the other backward from the goal--
-   hoping that the two searches meet in the middle. 
-   '''
-   if start == goal: return []
-   # TODO 2: Bi-directional BFS Search
-   # Your code goes here
-   return None
+    '''The idea of bi-directional search is to run two simultaneous searches--
+    one forward from the initial state and the other backward from the goal--
+    hoping that the two searches meet in the middle. 
+    '''
+    if start == goal:
+        return []
+    # TODO 2: Bi-directional BFS Search
+    # Your code goes here
+    return None
+
 
 def main():
-   filename = input("Type the word file: ")
-   words_set = set()
-   file = open(filename, "r")
-   for word in file.readlines():
-      words_set.add(word.rstrip('\n'))
-   #print ("Check generate_adjacents():", check_adj(words_set))
-   initial = input("Type the starting word: ")
-   goal = input("Type the goal word: ")
-   cur_time = time.time()
-   path = (bi_bfs(initial, goal, words_set))
-   if path != None:
-      print (path)
-      print ("The number of steps: ", len(path))
-      print ("Duration: ", time.time() - cur_time)
-   else:
-      print ("There's no path")
- 
+    filename = input("Type the word file: ")
+    words_set = set()
+    file = open(filename, "r")
+    for word in file.readlines():
+        words_set.add(word.rstrip('\n'))
+    #print ("Check generate_adjacents():", check_adj(words_set))
+    initial = input("Type the starting word: ")
+    goal = input("Type the goal word: ")
+    cur_time = time.time()
+    path = (bi_bfs(initial, goal, words_set))
+    if path != None:
+        print(path)
+        print("The number of steps: ", len(path))
+        print("Duration: ", time.time() - cur_time)
+    else:
+        print("There's no path")
+
+
 if __name__ == '__main__':
-   main()
+    main()
 
 '''
 Sample output 1
