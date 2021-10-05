@@ -37,8 +37,6 @@ class HeapPriorityQueue():
     def push(self, value):
         self.queue.append(value)
         self.heapUp(len(self.queue)-1)
-        if (len(self.queue) > 2 and self.queue[1] > self.queue[2]):
-            self.swap(1, 2)
 
     # helper method for push
     def heapUp(self, k):
@@ -60,14 +58,10 @@ class HeapPriorityQueue():
             leftN = 2*k
             rightN = (2*k)+1
             if self.queue[leftN] <= self.queue[rightN] and self.queue[leftN] < self.queue[k]:
-                temp = self.queue[k]
-                self.queue[k] = self.queue[leftN]
-                self.queue[leftN] = temp
+                self.queue[k], self.queue[leftN] = self.queue[leftN], self.queue[k]
                 k = leftN
             elif self.queue[leftN] > self.queue[rightN] and self.queue[rightN] < self.queue[k]:
-                temp = self.queue[k]
-                self.queue[k] = self.queue[rightN]
-                self.queue[rightN] = temp
+                self.queue[k], self.queue[rightN] = self.queue[rightN], self.queue[k]
                 k = rightN
             else:
                 k = size
@@ -77,15 +71,9 @@ class HeapPriorityQueue():
         for i in range(1, len(self.queue)):
             self.heapDown(i, len(self.queue))
 
-    # remove the min value (root of the heap)
-    # return the removed value
     def pop(self):
-        temp = self.queue[1]
-        self.remove(0)
-        return temp
+        return self.remove(0)
 
-    # remove a value at the given index (assume index 0 is the root)
-    # return the removed value
     def remove(self, index):
         index = index + 1
         if (len(self.queue) > 1):
@@ -93,8 +81,6 @@ class HeapPriorityQueue():
             self.queue[index] = self.queue[-1]
             self.queue.pop()
             self.heapDown(index, len(self.queue))
-            if (len(self.queue) > 2 and self.queue[1] > self.queue[2]):
-                self.swap(1, 2)
             return temp
         else:
             return None
@@ -108,6 +94,8 @@ def inversion_count(new_state, width=4, N=4):
        the blank is on an even row counting from the bottom (second-last, fourth-last, etc.) and number of inversions is even.
        the blank is on an odd row counting from the bottom (last, third-last, fifth-last, etc.) and number of inversions is odd.
     '''
+    loc= new_state.find("_")//width
+    new_state = new_state.replace("_","")
     numInversions = 0
     for i in range(len(new_state)):
         for k in new_state[i+1:]:
@@ -116,19 +104,19 @@ def inversion_count(new_state, width=4, N=4):
     if N % 2 == 1:
         return [False, True][numInversions % 2 == 0]
     else:
-        if (new_state.index("_")//4) % 2 == 0 and numInversions % 2 == 0:
+        if (loc % 2 == 0) and numInversions % 2 == 0:
             return True
-        elif (new_state.index("_")//4) % 2 == 1 and numInversions % 2 == 1:
+        elif (loc % 2 == 1) and numInversions % 2 == 1:
             return True
     return False
 
 
 def check_inversion():
-    t1 = inversion_count("_42135678", 3, 3)  # N=3
-    f1 = inversion_count("21345678_", 3, 3)
-    t2 = inversion_count("4123C98BDA765_EF", 4)  # N is default, N=4
-    f2 = inversion_count("4123C98BDA765_FE", 4)
-    return t1 and t2 and not (f1 or f2)
+   t1 = inversion_count("_42135678", 3, 3)  # N=3
+   f1 = inversion_count("21345678_", 3, 3)
+   t2 = inversion_count("4123C98BDA765_EF", 4) # N is default, N=4
+   f2 = inversion_count("4123C98BDA765_FE", 4)
+   return t1 and t2 and not (f1 or f2)
 
 
 def getInitialState(sample, size):
@@ -143,10 +131,8 @@ def getInitialState(sample, size):
 
 def swap(n, i, j):
     n = list(n)
-    temp = n[i]
-    n[i] = n[j]
-    n[j] = temp
-    return "".join(n)
+    n[i], n[j] = n[j], n[i]
+    return "".join(n) 
 
 
 '''Generate a list which hold all children of the current state
@@ -155,6 +141,10 @@ def swap(n, i, j):
 
 def generate_children(state, size=4):
     blank = state.index('_')
+    if blank%size == 0:
+        return [swap(state, blank, i) for i in [blank+1, blank+size, blank-size] if i >= 0 and i < len(state)]
+    if blank%size == size-1:
+        return [swap(state, blank, i) for i in [blank-1, blank+size, blank-size] if i >= 0 and i < len(state)]
     return [swap(state, blank, i) for i in [blank+1, blank-1, blank+size, blank-size] if i >= 0 and i < len(state)]
 
 
@@ -172,54 +162,37 @@ def display_path(path_list, size):
 
 def dist_heuristic(state, goal="_123456789ABCDEF", size=4):
     total = 0
-    for i in range(len(state)):
+    for i in range(1, len(goal)):           
         temp = goal.find(state[i])
-        if i != temp:
-            total += abs(temp//size - i//size) + abs(temp % size - i % size)
+        total += abs(temp//size - i//size) + abs(temp % size - i % size)
     return total
-
-def get_cost(explored, n):
-   cost = 0
-   while explored[n] != "s":  # "s" is initial's parent
-      cost+=1
-      n = explored[n]
-   return cost+1
 
 def check_heuristic():
     a = dist_heuristic("152349678_ABCDEF", "_123456789ABCDEF", 4)
     b = dist_heuristic("8936C_24A71FDB5E", "_123456789ABCDEF", 4)
     return (a < b)
 
-
 def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size=4):
     frontier = HeapPriorityQueue()
-    frontier.push((heuristic(start, goal, size), start))
-    explored = {}
-    costs = {start:1}
-    explored[start] = "s"
+    frontier.push((heuristic(start, goal, size), start, [start]))
     while True:
-        s = frontier.pop()[1]
+        path = frontier.pop()
+        s = path[1]
+        path = path[2]
         if s == goal:
-            n = s
-            l = []
-            while explored[n] != "s":  # "s" is initial's parent
-               l.append(n)
-               n = explored[n]
-            l.append(start)
-            return l[::-1]
+            return path
         for a in generate_children(s):
-            if a not in explored:
-                frontier.push((heuristic(a, goal, size)+costs[s], a))
-                costs[a] = costs[s] + 1
-                explored[a] = s
+            length = len(path) + 1
+            if a not in path:
+                frontier.push((heuristic(a, goal, size)+length, a, path+[a])) 
 
 
 def main():
     # A star
     print("Inversion works?:", check_inversion())
     print("Heuristic works?:", check_heuristic())
-    # initial_state = getInitialState("_123456789ABCDEF", 4)
-    initial_state = input("Type initial state: ")
+    initial_state = getInitialState("_123456789ABCDEF", 4)
+#     initial_state = input("Type initial state: ")
     if inversion_count(initial_state):
         cur_time = time.time()
         path = (a_star(initial_state))
