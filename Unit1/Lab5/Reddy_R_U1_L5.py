@@ -3,11 +3,6 @@
 
 import time
 
-words = set()
-for word in open("words_6_longer.txt", "r"):
-    words.add(word[:-1])
-
-
 def swap(word, switch, i):
     word = list(word)
     word[i] = switch
@@ -32,16 +27,45 @@ def check_adj(words_set):
     target = {'listee', 'listel', 'litten', 'lister', 'listed'}
     return (adj == target)
 
+def display_path(n, explored):  # key: current, value: parent
+    l = []
+    while explored[n] != "s":  # "s" is initial's parent
+        l.append(n)
+        n = explored[n]
+    l.append(n)
+    return l[::-1]
 
 def bi_bfs(start, goal, words_set):
     '''The idea of bi-directional search is to run two simultaneous searches--
     one forward from the initial state and the other backward from the goal--
     hoping that the two searches meet in the middle. 
     '''
-    if start == goal:
-        return []
-    # TODO 2: Bi-directional BFS Search
-    # Your code goes here
+    explored = [{start:"s"},{goal:"s"}]
+    Qs, Qe = [], []
+    Qs.append(start)
+    Qe.append(goal)
+    while True:
+        if len(Qs) == 0 or len(Qe) == 0: #check
+           return ("No Solution")
+        s = Qs.pop(0)
+        e = Qe.pop(0)
+        if s == e:
+           arr = display_path(s, explored[0]) + display_path(e,explored[1])[:-1][::-1]
+           return arr
+        elif s in explored[1]:
+           arr = display_path(s, explored[0]) + display_path(s,explored[1])[:-1][::-1]
+           return arr
+        elif e in explored[0]:
+            arr = display_path(e, explored[0]) + display_path(e,explored[1])[:-1][::-1]
+            return arr
+        for a in generate_adjacents(s, words_set):
+           if a not in explored[0].keys():
+              Qs.append(a)
+              explored[0][a] = s
+        for a in generate_adjacents(e, words_set):
+           if a not in explored[1].keys():
+              Qe.append(a)
+              explored[1][a] = e
     return None
 
 
@@ -51,7 +75,7 @@ def main():
     file = open(filename, "r")
     for word in file.readlines():
         words_set.add(word.rstrip('\n'))
-    #print ("Check generate_adjacents():", check_adj(words_set))
+    print ("Check generate_adjacents():", check_adj(words_set))
     initial = input("Type the starting word: ")
     goal = input("Type the goal word: ")
     cur_time = time.time()
