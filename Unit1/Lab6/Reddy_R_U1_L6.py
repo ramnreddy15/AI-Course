@@ -31,38 +31,28 @@ def display_path(n, explored):  # key: current, value: parent
     l.append(n)
     return l[::-1]
 
-def bi_bfs(start, goal, words_set):
-    '''The idea of bi-directional search is to run two simultaneous searches--
-    one forward from the initial state and the other backward from the goal--
-    hoping that the two searches meet in the middle. 
-    '''
-    explored = [{start:"s"},{goal:"s"}]
-    Qs, Qe = [], []
-    Qs.append(start)
-    Qe.append(goal)
+def dist_heuristic(state, goal="_123456789ABCDEF", size=4):
+    total = 0
+    for i in range(1, len(goal)):           
+        temp = goal.find(state[i])
+        total += abs(temp//size - i//size) + abs(temp % size - i % size)
+    return total
+
+def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, word_set):
+    explored = set(start)
+    frontier = HeapPriorityQueue()
+    frontier.push((heuristic(start, goal, size), start, [start]))
     while True:
-        if len(Qs) == 0 or len(Qe) == 0: #check
-           return ("No Solution")
-        s = Qs.pop(0)
-        e = Qe.pop(0)
-        if s == e:
-           arr = display_path(s, explored[0]) + display_path(e,explored[1])[:-1][::-1]
-           return arr
-        elif s in explored[1]:
-           arr = display_path(s, explored[0]) + display_path(s,explored[1])[:-1][::-1]
-           return arr
-        elif e in explored[0]:
-            arr = display_path(e, explored[0]) + display_path(e,explored[1])[:-1][::-1]
-            return arr
-        for a in generate_adjacents(s, words_set):
-           if a not in explored[0].keys():
-              Qs.append(a)
-              explored[0][a] = s
-        for a in generate_adjacents(e, words_set):
-           if a not in explored[1].keys():
-              Qe.append(a)
-              explored[1][a] = e
-    return None
+        path = frontier.pop()
+        s = path[1]
+        path = path[2]
+        if s == goal:
+            return path
+        for a in generate_adjacents(s,):
+            length = len(path) + 1
+            if not a in path:
+                explored.add(a)
+                frontier.push((heuristic(a, goal, size)+length, a, path+[a]))  
 
 
 def main():

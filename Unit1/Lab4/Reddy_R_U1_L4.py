@@ -173,6 +173,7 @@ def check_heuristic():
     return (a < b)
 
 def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size=4):
+    explored = set(start)
     frontier = HeapPriorityQueue()
     frontier.push((heuristic(start, goal, size), start, [start]))
     while True:
@@ -183,20 +184,21 @@ def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size=4):
             return path
         for a in generate_children(s):
             length = len(path) + 1
-            if a not in path:
-                frontier.push((heuristic(a, goal, size)+length, a, path+[a])) 
-
-
+            if not a in explored:
+                explored.add(a)
+                frontier.push((heuristic(a, goal, size)+length, a, path+[a]))                
+                
 def main():
     # A star
     print("Inversion works?:", check_inversion())
     print("Heuristic works?:", check_heuristic())
-    initial_state = getInitialState("_123456789ABCDEF", 4)
-#     initial_state = input("Type initial state: ")
+#     initial_state = getInitialState("_123456789ABCDEF", 4)
+    initial_state = input("Type initial state: ")
     if inversion_count(initial_state):
         cur_time = time.time()
         path = (a_star(initial_state))
         if path != None:
+#             print(path)
             display_path(path, 4)
         else:
             print("No Path Found.")
