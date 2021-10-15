@@ -3,6 +3,11 @@
 
 import time
 
+def swap(word, switch, i):
+    word = list(word)
+    word[i] = switch
+    return "".join(word)
+
 def generate_adjacents(current, words_set):
     ''' words_set is a set which has all words.
     By comparing current and words in the words_set,

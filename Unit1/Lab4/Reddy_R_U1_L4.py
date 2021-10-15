@@ -1,9 +1,8 @@
 # Name: Ram Reddy
 # Date: 09/29/2021
 
-import random
 import time
-import math
+import heapq
 
 class HeapPriorityQueue():
 
@@ -30,9 +29,6 @@ class HeapPriorityQueue():
     def isEmpty(self):
         return len(self.queue) == 1    # b/c index 0 is dummy
 
-    def swap(self, a, b):
-        self.queue[a], self.queue[b] = self.queue[b], self.queue[a]
-
     # Add a value to the heap_pq
     def push(self, value):
         self.queue.append(value)
@@ -44,10 +40,10 @@ class HeapPriorityQueue():
             leftN = k//2
             rightN = (k - 1) // 2
             if (k % 2 != 0 and self.queue[k] < self.queue[rightN]):
-                self.swap(k, rightN)
+                self.queue[k], self.queue[rightN] = self.queue[rightN], self.queue[k]
                 k = rightN
             elif (k % 2 == 0 and self.queue[k] < self.queue[leftN]):
-                self.swap(k, leftN)
+                self.queue[k], self.queue[leftN] = self.queue[leftN], self.queue[k]
                 k = leftN
             else:
                 k = 0
@@ -72,7 +68,14 @@ class HeapPriorityQueue():
             self.heapDown(i, len(self.queue))
 
     def pop(self):
-        return self.remove(0)
+        if (len(self.queue) > 1):
+            temp = self.queue[1]
+            self.queue[1] = self.queue[-1]
+            self.queue.pop()
+            self.heapDown(1, len(self.queue))
+            return temp
+        else:
+            return None
 
     def remove(self, index):
         index = index + 1
@@ -156,15 +159,37 @@ def display_path(path_list, size):
     print("\nThe shortest path length is :", len(path_list))
     return ""
 
+# def display_path(n, explored):  # key: current, value: parent
+#     l = []
+#     while explored[n] != "s":  # "s" is initial's parent
+#         l.append(n)
+#         n = explored[n]
+#     l.append(n)
+#     return l[::-1]
 
 ''' You can make multiple heuristic functions '''
 
 
-def dist_heuristic(state, goal="_123456789ABCDEF", size=4):
+def dist_heuristic(state, goal, size=4):
+    place = {"_":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"A":10,"B":11,"C":12,"D":13,"E":14,"F":15}
     total = 0
-    for i in range(1, len(goal)):           
-        temp = goal.find(state[i])
-        total += abs(temp//size - i//size) + abs(temp % size - i % size)
+#     place = goal.find("_")
+    for i,j in enumerate(state):           
+#         temp = state.find(j)
+        if j!="_":
+            temp = place[j]
+            total += abs(temp//size - i//size) + abs(temp % size - i % size)
+    return total
+
+def dist_heuristic_R(state, temp69, size=4):
+#     place = {"_":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"A":10,"B":11,"C":12,"D":13,"E":14,"F":15}
+    total = 0
+#     place = goal.find("_")
+    for i,j in enumerate(state):           
+#         temp = state.find(j)
+        if j!="_":
+            temp = temp69[j]
+            total += abs(temp//size - i//size) + abs(temp % size - i % size)
     return total
 
 def check_heuristic():
@@ -172,31 +197,70 @@ def check_heuristic():
     b = dist_heuristic("8936C_24A71FDB5E", "_123456789ABCDEF", 4)
     return (a < b)
 
-def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size=4):
-    explored = set(start)
-    frontier = HeapPriorityQueue()
-    frontier.push((heuristic(start, goal, size), start, [start]))
+# def a_star(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size=4):
+#     frontier = HeapPriorityQueue()
+#     temp = (heuristic(start, goal, size)
+# #     frontier.push(temp, start, [start]))
+#     while True:
+#         path = frontier.pop()
+#         s = path[1]
+#         path = path[2]
+#         if s == goal:
+#             return path
+#         for a in generate_children(s):
+#             if not a in set(path):
+#                 place = a.find("a")
+# #                 if 
+#                 frontier.push((heuristic(a, goal, size)+ len(path) + 1, a, path+[a]))           
+      
+def usedPath(n,explored):
+    l = []
+    while explored[n] != "s":  # "s" is initial's parent
+        l.append(n)
+        n = explored[n]
+    l.append(n)
+    return l
+
+def solve(start, goal="_123456789ABCDEF", heuristic=dist_heuristic, size = 4):
+    if start == goal: return []
+    places = {k: v for v, k in enumerate(start)}
+    frontierS = []
+    heapq.heappush(frontierS, (heuristic(start, goal, size), start, (start,)))
+    frontierE = []
+    heapq.heappush(frontierE, (dist_heuristic_R(goal, places, size), goal, (goal,)))
+    explored = [{start:"s"},{goal:"s"}]
     while True:
-        path = frontier.pop()
-        s = path[1]
-        path = path[2]
-        if s == goal:
-            return path
-        for a in generate_children(s):
-            length = len(path) + 1
-            if not a in explored:
-                explored.add(a)
-                frontier.push((heuristic(a, goal, size)+length, a, path+[a]))                
-                
+        pathS =  heapq.heappop(frontierS)
+        s = pathS[1]
+        pathS = pathS[2]
+        pathE =  heapq.heappop(frontierE)
+        e = pathE[1]
+        pathE = pathE[2]
+        if s is e:
+            return list(pathS)+ list(pathE[::-1])
+        elif s in explored[1]:
+            return list(usedPath(s,explored[0])[::-1]) + list(usedPath(s,explored[1])[1:])
+        elif e in explored[0]:
+            return list(usedPath(e,explored[0])[::-1]) + list(usedPath(e,explored[1])[1:])
+        for a in generate_children(s, size):
+           if a not in explored[0].keys():
+              explored[0][a] = s
+              heapq.heappush(frontierS,(heuristic(a, goal, size)+ len(pathS) + 1, a, pathS+(a,)))
+        for a in generate_children(e, size):
+           if a not in explored[1].keys():
+              explored[1][a] = e
+              heapq.heappush(frontierE,(dist_heuristic_R(a, places, size)+ len(pathE) + 1, a, pathE+(a,)))
+    return None
+
 def main():
     # A star
-    print("Inversion works?:", check_inversion())
-    print("Heuristic works?:", check_heuristic())
+#     print("Inversion works?:", check_inversion())
+#     print("Heuristic works?:", check_heuristic())
 #     initial_state = getInitialState("_123456789ABCDEF", 4)
     initial_state = input("Type initial state: ")
     if inversion_count(initial_state):
         cur_time = time.time()
-        path = (a_star(initial_state))
+        path = (solve(initial_state))
         if path != None:
 #             print(path)
             display_path(path, 4)
@@ -205,11 +269,11 @@ def main():
         print("Duration: ", (time.time() - cur_time))
     else:
         print("{} did not pass inversion test.".format(initial_state))
+    
 
 
 if __name__ == '__main__':
     main()
-
 
 ''' Sample output 1
 
