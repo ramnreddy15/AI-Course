@@ -7,20 +7,31 @@ import random
 
 def check_complete(assignment, vars, adjs):
    # check if assignment is complete or not. Goal_Test 
-   ''' your code goes here '''
+   if(len(vars) != len(assignment)):
+      return False
+   for node in assignment:
+      if node in adjs:
+         for adj in adjs[node]:
+            if adj != node and assignment[adj] == assignment[node]:
+               return False
    return True
 
 def select_unassigned_var(assignment, vars, adjs):
    # Select an unassigned variable - forward checking, MRV, or LCV
    # returns a variable
-   ''' your code goes here '''
-   pass
+   for key in vars.keys():
+      if key not in assignment:
+         return key
 
    
 def isValid(value, var, assignment, variables, adjs):
    # value is consistent with assignment
    # check adjacents to check 'var' is working or not.
-   ''' your code goes here '''
+   if var in adjs:
+      for adj in adjs[var]:
+         if adj in assignment:
+            if adj != var and assignment[adj] == value:
+               return False
    return True
 
 def backtracking_search(variables, adjs, shapes, frame): 
@@ -28,7 +39,16 @@ def backtracking_search(variables, adjs, shapes, frame):
 
 def recursive_backtracking(assignment, variables, adjs, shapes, frame):
    # Refer the pseudo code given in class.
-   ''' your code goes here '''
+   if check_complete(assignment, variables, adjs): return assignment
+   var = select_unassigned_var(assignment, variables, adjs)
+   for value in variables[var]:
+      if isValid(value, var, assignment, variables, adjs):
+         assignment[var] = value
+         result = recursive_backtracking(assignment, variables, adjs, shapes, frame)
+         draw_shape(shapes[var], frame, value)
+         if result != None: return result
+         draw_shape(shapes[var], frame, "white")
+         del assignment[var]
    return None
 
 # return shapes as {region:[points], ...} form
@@ -57,15 +77,29 @@ def draw_shape(points, frame, color):
 def main():
    regions, variables, adjacents  = [], {}, {}
    # Read mcNodes.txt and store all regions in regions list
-   ''' your code goes here '''
-   
+   temp = open("mcNodes.txt")
+   for node in temp:
+      regions.append(node[:-1])
+
    # Fill variables by using regions list -- no additional code for this part
    for r in regions: variables[r] = {'red', 'green', 'blue'}
 
    # Read mcEdges.txt and fill the adjacents. Edges are bi-directional.
-   ''' your code goes here '''
-
-
+   temp = open("mcEdges.txt")
+   for node in temp:
+      node1, node2 = node.split(" ")
+      if node1 not in adjacents:
+         adjacents[node1] = [node2[:-1]]
+      else:
+         tempL = adjacents[node1]
+         tempL.append(node2[:-1])
+         adjacents[node1] = tempL
+      if node2[:-1] not in adjacents:
+         adjacents[node2[:-1]] = [node1]
+      else:
+         tempL = adjacents[node2[:-1]]
+         tempL.append(node1)
+         adjacents[node2[:-1]] = tempL
    # Set graphics -- no additional code for this part
    frame = GraphWin('Map', 300, 300)
    frame.setCoords(0, 0, 299, 299)
