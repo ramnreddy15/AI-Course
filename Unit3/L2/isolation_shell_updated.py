@@ -20,7 +20,7 @@ class RandomPlayer:
         return (-1,-1), 0
       # returns best move
       # (column num, row num), 0
-      choice = list(moves)[random.randint(0,len(board)-1)]
+      choice = list(moves)[random.randint(0,len(moves)-1)]
       return (choice//5,choice%5), 0
       
      
@@ -33,7 +33,6 @@ class RandomPlayer:
       # 3 8 13 18 23
       # 4 9 14 19 24
       # if 2 has 'X', board = [['.', '.', 'X', '.', '.'], [col 2], .... ]
-      print("here",board,color)
       moves = set()
       rowNum = 0
       if(self.first_turn):
@@ -44,29 +43,28 @@ class RandomPlayer:
             rowNum +=1
         self.first_turn = False
       else:
-        placeRow, placeCol, tempRow, tempCol = -1,0,0,0
+        placeRow, placeCol, tempRow, tempCol = 0,0,0,0
         for col in board:
           for row in col:
-            if(color != (self.black if row == "X" else self.white)):
+            if((color == self.black and row == "X") or (color == self.white and row == "O")):
+              tempCol = -1
+              break  
+            else:
               placeRow+=1
-            if(color == (self.black if row == "X" else self.white)):
-              placeRow+=1
-              print(row)
-              break
+
+          if tempCol == -1:
+            break
         placeCol = placeRow//5
         placeRow = placeRow%5
-        placeRow-=1
-        print(board[placeCol][placeRow])
         for way in self.directions:
-          print(placeCol, placeRow)
           tempCol = placeCol
           tempRow = placeRow 
+          tempCol+=way[0]
+          tempRow+=way[1]
           while tempRow<5 and tempRow>=0 and tempCol<5 and tempCol>=0 and board[tempCol][tempRow] == ".":
+            moves.add(5*tempCol + tempRow)
             tempCol+=way[0]
             tempRow+=way[1]
-            if tempRow<5 and tempRow>=0 and tempCol<5 and tempCol>=0 and board[tempCol][tempRow] == ".":
-              moves.add(5*tempRow + tempCol)
-      print(moves)
       return moves
 
 class CustomPlayer:
@@ -82,12 +80,12 @@ class CustomPlayer:
 
    def best_strategy(self, board, color):
       # returns best move
-      return best_move, 0
+      return (0,0), 0
 
    def minimax(self, board, color, search_depth):
       # search_depth: start from 2
       # returns best "value"
-      return best_move, 1
+      return (0,0), 1
 
    def negamax(self, board, color, search_depth):
       # returns best "value"
