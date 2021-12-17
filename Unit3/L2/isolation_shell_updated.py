@@ -1,5 +1,5 @@
-# Name:
-# Date:
+# Name: Ram Reddy
+# Date: 12/10/2021
 import random
 
 class RandomPlayer:
@@ -15,9 +15,13 @@ class RandomPlayer:
    def best_strategy(self, board, color):
       # Terminal test: when there's no more possible move
       #                return (-1, -1), 0
+      moves = self.find_moves(board,color)
+      if(len(moves) == 0):
+        return (-1,-1), 0
       # returns best move
       # (column num, row num), 0
-      return best_move, 0
+      choice = list(moves)[random.randint(0,len(board)-1)]
+      return (choice//5,choice%5), 0
       
      
    def find_moves(self, board, color):
@@ -29,7 +33,41 @@ class RandomPlayer:
       # 3 8 13 18 23
       # 4 9 14 19 24
       # if 2 has 'X', board = [['.', '.', 'X', '.', '.'], [col 2], .... ]
-      return set()
+      print("here",board,color)
+      moves = set()
+      rowNum = 0
+      if(self.first_turn):
+        for col in board:
+          for row in col:
+            if(self.opposite_color[color] != self.black if row == "X" else self.white):
+              moves.add(rowNum)
+            rowNum +=1
+        self.first_turn = False
+      else:
+        placeRow, placeCol, tempRow, tempCol = -1,0,0,0
+        for col in board:
+          for row in col:
+            if(color != (self.black if row == "X" else self.white)):
+              placeRow+=1
+            if(color == (self.black if row == "X" else self.white)):
+              placeRow+=1
+              print(row)
+              break
+        placeCol = placeRow//5
+        placeRow = placeRow%5
+        placeRow-=1
+        print(board[placeCol][placeRow])
+        for way in self.directions:
+          print(placeCol, placeRow)
+          tempCol = placeCol
+          tempRow = placeRow 
+          while tempRow<5 and tempRow>=0 and tempCol<5 and tempCol>=0 and board[tempCol][tempRow] == ".":
+            tempCol+=way[0]
+            tempRow+=way[1]
+            if tempRow<5 and tempRow>=0 and tempCol<5 and tempCol>=0 and board[tempCol][tempRow] == ".":
+              moves.add(5*tempRow + tempCol)
+      print(moves)
+      return moves
 
 class CustomPlayer:
 
