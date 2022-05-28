@@ -1,3 +1,4 @@
+from re import I
 import PIL
 import urllib.request
 import io, sys, os, random
@@ -24,9 +25,10 @@ def createClusters(img, pix, count_buckets, move_count, means, count):
             temp.append(dist(pix[i,j], m))
            minV = min(temp)
            clusters[temp.index(minV)].append(pix[i,j])
-   
+   #  print("count buckets", count_buckets)
     for i in range(len(clusters)):
-       move_count[i] = len(clusters[i]) - count_buckets[i]
+       
+       move_count[i] = abs(len(clusters[i]) - count_buckets[i])
        count_buckets[i] = len(clusters[i])
        r, g, b = 0, 0, 0
        if len(clusters[i]) > 0:
@@ -40,7 +42,7 @@ def createClusters(img, pix, count_buckets, move_count, means, count):
          b/=len(clusters[i])
        means[i] = (r,g,b)
 
-    return clusters, move_count, means
+    return count_buckets, move_count, means
 
 def distinct_pix_count(img, pix):
    cols = {}
@@ -66,11 +68,18 @@ def check_move_count(mc):
    else:
       return False
 
+def update_picture(img, pix, means):
+   for i in range(img.size[0]):
+        for j in range(img.size[1]):
+           temp = []
+           for m in means:
+            temp.append(dist(pix[i,j], m))
+           minV = min(temp)
+           pix[i,j] = tuple([int(k) for k in means[temp.index(minV)]])
+   return pix
 def main():
-   # k = int(sys.argv[1])
-   # file = sys.argv[2]
-   k = 4
-   file = "turtle.jpg"
+   k = int(sys.argv[1])
+   file = sys.argv[2]
    if not os.path.isfile(file):
       file = io.BytesIO(urllib.request.urlopen(file).read())
    
@@ -97,20 +106,21 @@ def main():
    while check_move_count(move_count):
       count += 1
       count_buckets, move_count, means = createClusters(img, pix, count_buckets, move_count, means, count)
+      print("diff", count, ":", move_count)
       if count == 2:
          print ('first means:', means)
          print ('starting sizes:', count_buckets)
-#    pix, region_dict = update_picture(img, pix, means)  # region_dict can be an empty dictionary
+   pix = update_picture(img, pix, means)  # region_dict can be an empty dictionary
    print ('Final sizes:', count_buckets)
    print ('Final means:')
    for i in range(len(means)):
-      print (i+1, ':', means[i], '=>', count_buckets[i])
+      print (i+1, ':', means[i], '=>', count_buckets[i]) 
       
    img_tk2 = ImageTk.PhotoImage(img)
    lbl = tk.Label(window, image = img_tk2).pack()  # display the image at window
    
-   # img.save('kmeans/2020njkim.png', 'PNG')  # change to your own filename
-   img.save('2023rreddy.png', 'PNG')  # change to your own filename
+   img.save('kmeans/2023rreddy.png', 'PNG')  # change to your own filename
+   # img.save('2023rreddy.png', 'PNG')  # change to your own filename
    window.mainloop()
    img.show()
 
