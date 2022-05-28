@@ -1,0 +1,44 @@
+import sys; args = sys.argv[1:]
+
+idx = int(args[0])-60
+myRegexList = [
+    r"/^(?!.*010)\d*$/", 
+    r"/^(?!.*010|101)[10]*$/",
+    r"/^(?=.*(0|1))\1[01]*$/",
+    r"/\b(?=(\w)+)(?!\w*\1\w+)\w+/i",
+    r"/\b((\w)+(?=((((?!\2)\w)*\2){2})*((?!\2)\w)*\2((?!\2)\w)*\b)){2}\w*\b/i",
+    r"/\b(?=(\w)+(\w*\1){2})(\1|(\w)(?!\w*\4))+\b/i",
+    r"/\b(?=\w*a)(?=\w*e)(?=\w*i)(?=\w*o)(?=\w*u)(?=(?!\w*a\w*a)(?!\w*e\w*e)(?!\w*i\w*i)(?!\w*o\w*o)(?!\w*u\w*u))\w*\b/",
+    r"/^((?=0*(10*10*)*0*$)(?=1*01*(01*01*)*1*$)).*$/",
+    r"/^(1(01*0)*10*)+$|^0$/",
+    r"/^1(01*0|10*1)*(01*)?$/",
+   ]
+print(myRegexList[idx])
+
+
+   #48: /^\b[bc]*a?[bc]*$/
+   #48: /^(b|c|a[bc]*$)+$/
+   #49: /^(b|c|a[bc]*a)+$/
+   #50: /^((1[02]+1|2)0*)+$/
+
+'''
+for s in myRegexList:
+   this_len = len(s) - 2
+   total_len += this_len
+   print (this_len)
+print (total_len)
+'''
+'''
+X means syntax error
+E means script error
+T means time out
+M means missing
+D means no trailing /
+O means bad option
+I means invalid regular expression
+P means shouldn't be doing this
+N means internal error
+r'\ makes no \\
+'''
+
+# Ram Reddy 6 2023
